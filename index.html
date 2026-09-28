@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="pt">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PC Sim B450M</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/7.css@0.21.1/dist/7.scoped.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.48.0/dist/tabler-icons.min.css">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/bios.css">
+<link rel="stylesheet" href="css/os.css">
+</head>
+<body>
+  <main class="stage">
+    <div class="monitor">
+      <div class="bezel">
+        <div class="screen-fit" id="screenFit">
+          <div class="screen" id="screen" tabindex="0" aria-label="Simulated monitor"></div>
+        </div>
+      </div>
+      <div class="monitor-led" id="monitorLed" aria-hidden="true"></div>
+    </div>
+
+    <section class="panel" aria-label="Case front panel and motherboard">
+      <div class="group">
+        <button class="hw-btn power" id="btnPower" type="button" title="Power button (hold 4 s to force off)">
+          <i class="ti ti-power" aria-hidden="true"></i><span>Power</span>
+        </button>
+        <button class="hw-btn" id="btnReset" type="button" title="Reset button">
+          <i class="ti ti-refresh" aria-hidden="true"></i><span>Reset</span>
+        </button>
+        <button class="hw-btn" id="btnDel" type="button" title="Press during POST to enter BIOS">
+          <span class="key">DEL</span><span>Hold for BIOS</span>
+        </button>
+      </div>
+
+      <div class="group leds" aria-label="EZ Debug LED">
+        <span class="led-label">EZ Debug LED</span>
+        <span class="led" data-led="CPU">CPU</span>
+        <span class="led" data-led="DRAM">DRAM</span>
+        <span class="led" data-led="VGA">VGA</span>
+        <span class="led" data-led="BOOT">BOOT</span>
+      </div>
+
+      <div class="group readout" id="readout" aria-live="polite">Off. Press Power.</div>
+
+      <div class="group">
+        <button class="hw-btn subtle" id="btnCmos" type="button" title="Short JBAT1 with the PC off">
+          <i class="ti ti-battery-off" aria-hidden="true"></i><span>Clear CMOS (JBAT1)</span>
+        </button>
+        <button class="hw-btn subtle" id="btnSpecs" type="button">
+          <i class="ti ti-list-details" aria-hidden="true"></i><span>Parts list</span>
+        </button>
+      </div>
+    </section>
+
+    <dialog class="parts" id="partsDialog">
+      <h2>Parts list</h2>
+      <div id="partsBody"></div>
+      <form method="dialog"><button type="submit">Close</button></form>
+    </dialog>
+    <p class="disclaimer">Simulation only. Nothing on this page reads or changes your real hardware.</p>
+  </main>
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>
