@@ -10,5 +10,6 @@ import sensors from './sensors.js';
 import sysinfo from './sysinfo.js';
 import events from './events.js';
 import simsettings from './simsettings.js';
+import { doom, minecraft, hexgl } from './games.js';
 
-export const APPS = [browser, youtube, spotify, notepad, stress, bench, gputuner, sensors, sysinfo, events, simsettings];
+export const APPS = [browser, youtube, spotify, notepad, doom, minecraft, hexgl, stress, bench, gputuner, sensors, sysinfo, events, simsettings];

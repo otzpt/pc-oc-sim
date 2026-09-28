@@ -94,3 +94,17 @@
 .iframe-wrap iframe { flex: 1; border: 0; width: 100%; height: 100%; background: #fff; }
 .notice { padding: 8px 10px; background: #fff8e1; border: 1px solid #e5c56b; color: #6b4e00; font-size: 9pt; }
 .startmenu[hidden], .desk [hidden] { display: none !important; }
+
+/* Games + RivaTuner-style on-screen display */
+.game-wrap { position: relative; flex: 1; min-height: 0; display: flex; background: #000; }
+.game-wrap iframe { flex: 1; border: 0; width: 100%; height: 100%; }
+.osd { position: absolute; left: 8px; top: 8px; padding: 6px 8px; pointer-events: none;
+  font: 600 12px/1.35 "IBM Plex Mono", Consolas, monospace; color: #ffe46b; text-shadow: 1px 1px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000; font-variant-numeric: tabular-nums; }
+.osd b { font-weight: 700; margin-right: 6px; }
+.osd .o-g { color: #7ee787; } .osd .o-c { color: #79c0ff; } .osd .o-m { color: #d2a8ff; }
+.osd .o-fps { font-size: 20px; color: #fff; margin-top: 2px; }
+.osd small { font-size: 11px; color: #ffe46b; }
+.osd-graph { position: absolute; left: 14px; top: 124px; width: 180px; height: 40px; pointer-events: none; opacity: 0.85; }
+.game-tdr { position: absolute; inset: 0; display: grid; place-items: center; background: #000; color: #ddd; font: 14px "Segoe UI", "Noto Sans", sans-serif; }
+.game-bar { display: flex; gap: 16px; align-items: center; padding: 4px 8px; background: #f0f0f0; font-size: 9pt; }
+.game-bar .g-note { color: #555; margin-left: auto; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }

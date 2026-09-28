@@ -57,6 +57,12 @@ No build step and no npm dependencies.
 - **Desktop apps**: Internet (iframe), YouTube and Spotify (official embeds),
   Notepad, Stress Lab, Benchmarks, GPU Tuner, Sensors, System Info, Event
   Viewer, Control Panel.
+- **Games with a simulated FPS overlay**: DOOM, Minecraft Classic and HexGL
+  run as their real web versions in a window. The RivaTuner-style overlay does
+  not measure your browser; it shows the frame rate this simulated PC would
+  get, from the CPU clock, GPU clock and memory bandwidth, memory latency and
+  throttling in the simulation. Minecraft is CPU and latency bound, HexGL is
+  GPU bound, DOOM has an optional vanilla 35 Hz engine cap.
 
 Calibration targets (stock settings): about 13,200 points multi-core and 1,500
 single-core in Cinebench R23 for the 5700X ([cpu-monkey](https://www.cpu-monkey.com/en/cpu-amd_ryzen_7_5700x)),
@@ -87,6 +93,19 @@ the Web Audio API, so the project ships no image or audio files from anyone else
 
 YouTube and Spotify content is played through their official embed players and
 stays under their terms of service.
+
+## Games (embedded from their official sites, not bundled)
+
+| Game | Source | License |
+|---|---|---|
+| DOOM (shareware episode) | [silentspacemarine.com](https://silentspacemarine.com), Cloudflare's [doom-wasm](https://github.com/cloudflare/doom-wasm) port of Chocolate Doom | Engine GPL-2.0; the shareware WAD is freely redistributable by id Software's shareware terms |
+| Minecraft Classic | [classic.minecraft.net](https://classic.minecraft.net), the free official browser version by Mojang | Mojang's terms of use |
+| HexGL | [hexgl.bkcore.com](https://hexgl.bkcore.com), by Thibaut Despoulain ([BKcore/HexGL](https://github.com/BKcore/HexGL)) | MIT |
+
+Eaglercraft was considered and left out on purpose: it is built from
+decompiled Minecraft code and assets, and Mojang has filed DMCA takedowns
+against it ([GitHub DMCA notice, April 2023](https://github.com/github/dmca/blob/master/2023/04/2023-04-12-eaglecraft.md)).
+Minecraft Classic is Mojang's own free browser version, so it is used instead.
 
 ## Trademarks and sources
 
