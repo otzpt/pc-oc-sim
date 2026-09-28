@@ -6,9 +6,15 @@ const parseId = s => {
   if (m) return m[1];
   return /^[\w-]{11}$/.test(s) ? s : null;
 };
-// Quick pick that is known to allow embedding (checked 2026-09-28). Some videos
-// block embeds; those show "This video is unavailable" and need Watch on YouTube.
-const PICKS = [['jNQXAC9IVRw', 'Me at the zoo (first YouTube video)']];
+// Quick picks. Each one was loaded in the embed player on 2026-09-28 and did not
+// show "This video is unavailable" (some videos block embeds; those need Watch on YouTube).
+// [video id, button label, full title (channel)]
+const PICKS = [
+  ['HGvi8G07Tjk', '1155 do ET: OC', 'FIZ OVERCLOCK NA LGA1155 ATÉ A CPU CRIAR CONSCIÊNCIA PRÓPRIA (1155 do ET)'],
+  ['VsLGHrdbjTI', '1155 do ET: fita isolante', 'O DIA QUE O 1155 DO ET FEZ OVERCLOCK COM UMA FITA ISOLANTE (1155 DO ET - SHORTS)'],
+  ['DBGgi5Lqn0U', 'Terry A. Davis: TempleOS', 'Terry A Davis: Homeless And Hunting Bugs In TempleOS (Cactus)'],
+  ['t9l058vrURo', 'Bisqwit: TempleOS', 'Bisqwit analyses TempleOS & its sole author, Terry A. Davis (Bisqwit)'],
+];
 
 export default {
   id: 'youtube', title: 'YouTube', icon: 'ti-brand-youtube', color: '#ff2a2a', w: 820, h: 560,
@@ -17,7 +23,7 @@ export default {
       <div class="app-row" style="padding:6px">
         <input class="yt-in" style="flex:1" placeholder="Paste a YouTube link or video ID" aria-label="YouTube link">
         <button data-yt="play">Play</button>
-        ${PICKS.map(([id, t]) => `<button data-pick="${id}" title="${t}">${t}</button>`).join('')}
+        ${PICKS.map(([id, label, title]) => `<button data-pick="${id}" title="${title}">${label}</button>`).join('')}
       </div>
       <div class="iframe-wrap"><iframe title="YouTube player" sandbox="allow-scripts allow-same-origin allow-popups allow-presentation" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe></div>
       <div class="notice msg" hidden></div>`;
