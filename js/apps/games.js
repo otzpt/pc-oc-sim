@@ -1,4 +1,6 @@
-// Games run as the real web versions in an iframe. The FPS overlay is simulated:
+// Games run as the real web versions in a sandboxed iframe: scripts, their own
+// origin (storage, WebGL, WebSockets) and pointer lock only, so a game page
+// cannot navigate the simulator away or open popups. The FPS overlay is simulated:
 // it shows what this PC would get, from the clocks, memory latency and
 // throttling the simulation reports, not the browser's real frame rate.
 import { memPerf } from '../model.js';
@@ -36,7 +38,7 @@ function makeGame(id, title, icon, color, url, w, h) {
       body.style.background = '#000';
       body.innerHTML = `
         <div class="game-wrap">
-          <iframe title="${title}" src="${url}" allow="autoplay; fullscreen; gamepad" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>
+          <iframe title="${title}" src="${url}" sandbox="allow-scripts allow-same-origin allow-pointer-lock" allow="autoplay; fullscreen; gamepad" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>
           <div class="osd" aria-live="off"></div>
           <canvas class="osd-graph" width="180" height="40" aria-hidden="true"></canvas>
           <div class="game-tdr" hidden>Display driver stopped responding and has recovered.</div>

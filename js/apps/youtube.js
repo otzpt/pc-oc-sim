@@ -6,7 +6,9 @@ const parseId = s => {
   if (m) return m[1];
   return /^[\w-]{11}$/.test(s) ? s : null;
 };
-const PICKS = [['dQw4w9WgXcQ', 'Rick Astley, Never Gonna Give You Up'], ['jNQXAC9IVRw', 'Me at the zoo (first YouTube video)']];
+// Quick pick that is known to allow embedding (checked 2026-09-28). Some videos
+// block embeds; those show "This video is unavailable" and need Watch on YouTube.
+const PICKS = [['jNQXAC9IVRw', 'Me at the zoo (first YouTube video)']];
 
 export default {
   id: 'youtube', title: 'YouTube', icon: 'ti-brand-youtube', color: '#ff2a2a', w: 820, h: 560,
@@ -15,9 +17,9 @@ export default {
       <div class="app-row" style="padding:6px">
         <input class="yt-in" style="flex:1" placeholder="Paste a YouTube link or video ID" aria-label="YouTube link">
         <button data-yt="play">Play</button>
-        ${PICKS.map(([id, t]) => `<button data-pick="${id}" title="${t}">${t.split(',')[0]}</button>`).join('')}
+        ${PICKS.map(([id, t]) => `<button data-pick="${id}" title="${t}">${t}</button>`).join('')}
       </div>
-      <div class="iframe-wrap"><iframe title="YouTube player" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe></div>
+      <div class="iframe-wrap"><iframe title="YouTube player" sandbox="allow-scripts allow-same-origin allow-popups allow-presentation" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe></div>
       <div class="notice msg" hidden></div>`;
     const frame = body.querySelector('iframe');
     const msg = body.querySelector('.msg');

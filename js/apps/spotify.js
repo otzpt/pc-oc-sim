@@ -15,7 +15,7 @@ export default {
         <input class="sp-in" style="flex:1" placeholder="Paste a Spotify link (track, album, playlist)" aria-label="Spotify link">
         <button data-sp="go">Open</button>
       </div>
-      <div class="iframe-wrap" style="background:#121212"><iframe title="Spotify player" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe></div>
+      <div class="iframe-wrap" style="background:#121212"><iframe title="Spotify player" sandbox="allow-scripts allow-same-origin allow-popups" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe></div>
       <div class="notice msg" hidden></div>`;
     const frame = body.querySelector('iframe');
     const msg = body.querySelector('.msg');
