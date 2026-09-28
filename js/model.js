@@ -354,7 +354,7 @@ export function postCheck(cfg, sil) {
   if (mm.margin < -0.35) return { ok: false, stage: 'DRAM', reason: `Memory training failed (${mm.why})` };
   const fm = fclkMargin(cfg.mem, sil);
   if (fm < -66) return { ok: false, stage: 'DRAM', reason: `Infinity Fabric does not train at FCLK ${cfg.mem.fclk} MHz` };
-  return { ok: true, cpuMargin: cpu.worst, memMargin: mm.margin, fclkMargin: fm, bootRisk: cpu.worst < 0 || mm.margin < 0 };
+  return { ok: true, cpuMargin: cpu.worst, cpuCore: cpu.worstCore, memMargin: mm.margin, memWhy: mm.why, fclkMargin: fm, bootRisk: cpu.worst < 0 || mm.margin < 0 };
 }
 
 export { clamp, lerpTable };

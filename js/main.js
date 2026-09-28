@@ -9,6 +9,8 @@ import { openDesktop } from './os.js';
 import { CPU, BOARD, RAM, GPU, COOLER, SSD, PSU, CASE } from './hardware.js';
 import { orb } from './ui/orb.js';
 import { sound } from './ui/sound.js';
+import { STOP_CODES, likelyCause } from './stopcodes.js';
+import { esc } from './ui/esc.js';
 
 const screen = document.getElementById('screen');
 const fit = document.getElementById('screenFit');
@@ -200,7 +202,10 @@ function bootOs(cfg, res) {
   const risky = res.cpuMargin < 0.005 || res.memMargin < 0.05;
   later(() => {
     if (risky && Math.random() < 0.5) {
-      bsod({ name: res.cpuMargin < 0.005 ? 'CLOCK_WATCHDOG_TIMEOUT' : 'MEMORY_MANAGEMENT', code: res.cpuMargin < 0.005 ? '0x00000101' : '0x0000001A' });
+      const cpuFault = res.cpuMargin < 0.005;
+      bsod(cpuFault
+        ? { name: 'CLOCK_WATCHDOG_TIMEOUT', code: '0x00000101', kind: 'cpu', where: `Core ${res.cpuCore}` }
+        : { name: 'MEMORY_MANAGEMENT', code: '0x0000001A', kind: 'mem', where: res.memWhy });
       return;
     }
     desktop(cfg);
@@ -252,9 +257,17 @@ Beginning dump of physical memory.
 Dumping physical memory to disk:  100
 Physical memory dump complete.
 Contact your system admin or technical support group for further assistance.`, 'bsod');
-  status(`BSOD ${ev.name}. Rebooting in 10 s (or press any key).`);
+  const why = likelyCause(ev.kind, ev.where);
+  const note = document.createElement('div');
+  note.className = 'bsod-note';
+  note.innerHTML = `<b>What this means</b> (simulator note)
+${esc(ev.name)} (${esc(ev.code)}): ${esc(STOP_CODES[ev.name] ?? 'Windows stopped to prevent damage.')}
+<b>Likely cause here:</b> ${esc(why.cause)}
+<b>Try:</b> ${esc(why.fix)}`;
+  screen.querySelector('.bsod').appendChild(note);
+  status(`BSOD ${ev.name}. Rebooting in 25 s (or press any key).`);
   machine.keyHandler = () => reboot();
-  later(reboot, 10000);
+  later(reboot, 25000);
 }
 
 sim.on(ev => {

@@ -227,7 +227,7 @@ export const sim = {
 
   crash(kind, where) {
     const [name, code] = pick(BSOD[kind]);
-    return this.fail({ type: 'bsod', name, code, where });
+    return this.fail({ type: 'bsod', name, code, where, kind });
   },
 
   fail(ev) {
