@@ -14,53 +14,74 @@
 <link rel="stylesheet" href="css/os.css">
 </head>
 <body>
-  <main class="stage">
-    <div class="monitor">
-      <div class="lcd">
-        <div class="screen-fit" id="screenFit">
-          <div class="screen" id="screen" tabindex="0" aria-label="Simulated monitor"></div>
+  <main class="stage" data-screen="black" data-on="0">
+    <div class="scene">
+      <div class="monitor">
+        <div class="lcd">
+          <div class="screen-fit" id="screenFit">
+            <div class="screen" id="screen" tabindex="0" aria-label="Simulated monitor"></div>
+          </div>
+          <div class="lcd-chin">
+            <span class="lcd-brand">VOID</span>
+            <button class="lcd-power standby" id="btnPower" type="button" title="Power (turns the PC on and off)" aria-label="Power">
+              <span class="ring"><i class="ti ti-power" aria-hidden="true"></i></span>
+            </button>
+          </div>
         </div>
-        <div class="lcd-chin">
-          <span class="lcd-brand">VOID</span>
-          <button class="lcd-power standby" id="btnPower" type="button" title="Power (turns the PC on and off)" aria-label="Power">
-            <span class="ring"><i class="ti ti-power" aria-hidden="true"></i></span>
+        <div class="lcd-neck" aria-hidden="true"></div>
+        <div class="lcd-base" aria-hidden="true"></div>
+      </div>
+
+      <div class="case" aria-label="Aerocool B508A Flow ARGB case">
+        <div class="case-top">
+          <button class="case-btn power" id="btnCasePower" type="button" title="Case power button" aria-label="Case power button"><span></span></button>
+          <button class="case-btn reset" id="btnReset" type="button" title="Case reset button" aria-label="Reset"><span></span></button>
+          <i class="case-hdd" id="hddLed" aria-hidden="true"></i>
+          <span class="case-ports" aria-hidden="true"><i></i><i></i><i></i></span>
+        </div>
+        <div class="case-front" aria-hidden="true"><div class="fan"></div><div class="fan"></div></div>
+      </div>
+    </div>
+    <div class="tabletop" aria-hidden="true"></div>
+
+    <section class="panel" aria-label="Controls">
+      <div class="group">
+        <h3>Keyboard</h3>
+        <div class="group-row">
+          <button class="hw-btn" id="btnDel" type="button" title="Press or hold during POST to enter BIOS">
+            <span class="key">DEL</span><span>Hold for BIOS</span>
           </button>
         </div>
       </div>
-      <div class="lcd-neck" aria-hidden="true"></div>
-      <div class="lcd-base" aria-hidden="true"></div>
-    </div>
-
-    <section class="panel" aria-label="Case front panel and motherboard">
-      <div class="group">
-        <button class="hw-btn" id="btnReset" type="button" title="Reset button">
-          <i class="ti ti-refresh" aria-hidden="true"></i><span>Reset</span>
-        </button>
-        <button class="hw-btn" id="btnDel" type="button" title="Press during POST to enter BIOS">
-          <span class="key">DEL</span><span>Hold for BIOS</span>
-        </button>
-      </div>
-
-      <div class="group leds" aria-label="EZ Debug LED">
-        <span class="led-label">EZ Debug LED</span>
-        <span class="led" data-led="CPU">CPU</span>
-        <span class="led" data-led="DRAM">DRAM</span>
-        <span class="led" data-led="VGA">VGA</span>
-        <span class="led" data-led="BOOT">BOOT</span>
-      </div>
-
-      <div class="group readout" id="readout" aria-live="polite">Off. Press the power button on the monitor.</div>
 
       <div class="group">
-        <button class="hw-btn subtle" id="btnCmos" type="button" title="Short JBAT1 with the PC off">
-          <i class="ti ti-battery-off" aria-hidden="true"></i><span>Clear CMOS (JBAT1)</span>
-        </button>
-        <button class="hw-btn subtle" id="btnMute" type="button">
-          <i class="ti ti-volume" aria-hidden="true"></i><span>Sound on</span>
-        </button>
-        <button class="hw-btn subtle" id="btnSpecs" type="button">
-          <i class="ti ti-list-details" aria-hidden="true"></i><span>Parts list</span>
-        </button>
+        <h3>Motherboard debug LEDs</h3>
+        <div class="leds" aria-live="polite">
+          <span class="led" data-led="CPU">CPU</span>
+          <span class="led" data-led="DRAM">DRAM</span>
+          <span class="led" data-led="VGA">VGA</span>
+          <span class="led" data-led="BOOT">BOOT</span>
+        </div>
+      </div>
+
+      <div class="group readout-group">
+        <h3>Telemetry</h3>
+        <div class="readout" id="readout" aria-live="polite">Off. Press the power button on the monitor.</div>
+      </div>
+
+      <div class="group">
+        <h3>Bench tools</h3>
+        <div class="group-row">
+          <button class="hw-btn" id="btnCmos" type="button" title="Short JBAT1 with the PC off">
+            <i class="ti ti-battery-off" aria-hidden="true"></i><span>Clear CMOS</span>
+          </button>
+          <button class="hw-btn" id="btnMute" type="button">
+            <i class="ti ti-volume" aria-hidden="true"></i><span>Sound on</span>
+          </button>
+          <button class="hw-btn" id="btnSpecs" type="button">
+            <i class="ti ti-list-details" aria-hidden="true"></i><span>Parts list</span>
+          </button>
+        </div>
       </div>
     </section>
 

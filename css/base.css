@@ -1,62 +1,149 @@
+/* The room around the PC: a desk at night. The only bright colours on the page
+   come from the hardware itself (screen glow, power LEDs, ARGB fans). */
 :root {
-  --room: #0f1012;
-  --room-2: #17191c;
-  --ink: #e6e8eb;
-  --ink-2: #9aa0a8;
-  --line: #2a2d32;
-  --led-off: #2b2d31;
+  --wall: #12161e;
+  --wall-2: #0d1016;
+  --desk: #221c16;
+  --desk-edge: #2e261e;
+  --ink: #e8eaee;
+  --ink-2: #98a0ac;
+  --line: #262c36;
+  --panel: #161a22;
+  --led-off: #2a2f38;
   --led-red: #ff4b3e;
   --led-amber: #ffb02e;
-  --led-green: #43d17a;
+  --led-blue: #58a9ff;
+  --glow: transparent;           /* set per screen state below */
+  --fan-spin: 1.6s;              /* driven by the simulated case fan duty */
   --mono: "IBM Plex Mono", ui-monospace, monospace;
   --sans: "Noto Sans", "Segoe UI", system-ui, sans-serif;
   color-scheme: dark;
 }
 * { box-sizing: border-box; }
 html, body { height: 100%; }
-body { margin: 0; background: var(--room); color: var(--ink); font: 14px/1.5 var(--sans); }
+body { margin: 0; background: var(--wall); color: var(--ink); font: 14px/1.5 var(--sans); }
 
 .stage {
   min-height: 100%;
   display: grid;
   grid-template-rows: 1fr auto auto;
-  gap: 16px;
-  padding: 16px;
   max-width: 1600px;
   margin: 0 auto;
+  padding-inline: 16px;
 }
 
-/* Monitor: a Windows 7 era 16:9 LCD. Simple shapes only (bezel, chin, stand). */
-.monitor { display: grid; justify-items: center; align-content: start; min-height: 0; }
-.lcd {
-  width: min(100%, calc((100vh - 330px) * 16 / 9 + 36px));
-  min-width: 340px;
-  padding: 16px 16px 0;
-  background: linear-gradient(180deg, #1c1d21 0%, #0e0f11 100%);
-  border: 1px solid #2b2d32;
-  border-radius: 12px;
-  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.08), 0 24px 48px rgb(0 0 0 / 0.55);
+/* Light the screen throws on the wall, coloured by what is on screen. */
+.stage[data-screen="post"] { --glow: rgb(200 205 215 / 0.10); }
+.stage[data-screen="bios-host"] { --glow: rgb(216 34 42 / 0.24); }
+.stage[data-screen="winboot"] { --glow: rgb(90 150 255 / 0.10); }
+.stage[data-screen="win7"], .stage[data-screen="bsod"] { --glow: rgb(40 110 220 / 0.32); }
+.stage[data-screen="ocfail"], .stage[data-screen="nosignal"] { --glow: rgb(200 205 215 / 0.05); }
+
+.scene {
+  position: relative;
+  display: flex; align-items: flex-end; justify-content: center; gap: clamp(16px, 4vw, 56px);
+  padding-top: 20px;
+  min-height: 0;
 }
-.screen-fit { position: relative; width: 100%; aspect-ratio: 16 / 9; overflow: hidden; background: #000; border: 1px solid #000; box-shadow: inset 0 0 0 1px #050505; }
-.lcd-chin { position: relative; height: 48px; display: flex; align-items: center; justify-content: center; }
-.lcd-brand { font: 600 12px var(--sans); letter-spacing: 0.35em; color: #7d8189; }
+.scene::before {
+  content: ""; position: absolute; inset: -10% 10% 0; pointer-events: none;
+  background: radial-gradient(ellipse 45% 55% at 42% 45%, var(--glow), transparent 70%);
+  transition: background 0.8s ease;
+}
+
+/* Monitor: Windows 7 era 16:9 LCD in piano black. */
+.monitor { position: relative; display: grid; justify-items: center; flex: 0 1 auto; min-width: 0; }
+.lcd {
+  --bez: 14px;
+  width: min(calc(100vw - 32px - var(--case-w) - 56px), calc((100vh - 350px) * 16 / 9 + 2 * var(--bez)));
+  min-width: 320px;
+  padding: var(--bez) var(--bez) 0;
+  border-radius: 10px 10px 8px 8px;
+  background:
+    linear-gradient(160deg, rgb(255 255 255 / 0.07) 0%, transparent 22%),
+    linear-gradient(180deg, #16181c 0%, #0a0b0d 100%);
+  border: 1px solid #262930;
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.10), inset 0 -1px 0 rgb(0 0 0 / 0.6), 0 30px 60px rgb(0 0 0 / 0.55);
+}
+.screen-fit { position: relative; width: 100%; aspect-ratio: 16 / 9; overflow: hidden; background: #020203; border-radius: 2px; box-shadow: 0 0 0 1px #000; }
+/* Faint glass reflection over the panel. */
+.screen-fit::after {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background: linear-gradient(115deg, rgb(255 255 255 / 0.05) 0%, rgb(255 255 255 / 0.015) 32%, transparent 33%);
+}
+.lcd-chin { position: relative; height: 44px; display: flex; align-items: center; justify-content: center; }
+.lcd-brand { font: 600 11px var(--sans); letter-spacing: 0.42em; color: #6d727c; padding-left: 0.42em; }
 .lcd-power {
-  position: absolute; right: 18px; top: 50%; transform: translateY(-50%);
+  position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
   width: 44px; height: 44px; display: grid; place-items: center;
-  background: none; border: 0; border-radius: 50%; cursor: pointer; color: #6b6f77;
+  background: none; border: 0; border-radius: 50%; cursor: pointer; color: #5d626b;
 }
 .lcd-power .ring {
-  width: 26px; height: 26px; display: grid; place-items: center; border-radius: 50%;
-  border: 1.5px solid #3a3d43; background: #131417; transition: border-color 0.3s, box-shadow 0.3s, color 0.3s;
+  width: 24px; height: 24px; display: grid; place-items: center; border-radius: 50%;
+  border: 1.5px solid #353941; background: #0e0f12; transition: border-color 0.3s, box-shadow 0.3s, color 0.3s, transform 0.1s;
 }
-.lcd-power .ti { font-size: 14px; }
-.lcd-power:hover .ring { border-color: #5a5e66; color: #b8bcc4; }
-.lcd-power:focus-visible { outline: 2px solid #4aa3ff; outline-offset: 2px; }
-.lcd-power.standby .ring { border-color: #b07a1c; color: var(--led-amber); box-shadow: 0 0 8px rgb(255 176 46 / 0.35); }
-.lcd-power.on .ring { border-color: #3f8fe0; color: #7cc0ff; box-shadow: 0 0 10px rgb(74 163 255 / 0.55); }
-.lcd-power:active .ring { transform: scale(0.94); }
-.lcd-neck { width: 110px; height: 56px; background: linear-gradient(90deg, #121316, #26282d 50%, #121316); clip-path: polygon(18% 0, 82% 0, 100% 100%, 0 100%); }
-.lcd-base { width: 340px; max-width: 70%; height: 14px; border-radius: 50% 50% 6px 6px / 100% 100% 6px 6px; background: linear-gradient(#26282d, #0e0f11); box-shadow: 0 10px 24px rgb(0 0 0 / 0.6); }
+.lcd-power .ti { font-size: 13px; }
+.lcd-power:hover .ring { border-color: #5a5f69; color: #b8bdc6; }
+.lcd-power:focus-visible { outline: 2px solid var(--led-blue); outline-offset: 2px; }
+.lcd-power.standby .ring { border-color: #8a6118; color: var(--led-amber); box-shadow: 0 0 6px rgb(255 176 46 / 0.28); }
+.lcd-power.on .ring { border-color: #3a83d6; color: #8cc6ff; box-shadow: 0 0 10px rgb(88 169 255 / 0.55); }
+.lcd-power:active .ring { transform: scale(0.92); }
+.lcd-neck { width: 96px; height: 58px; background: linear-gradient(90deg, #0d0e11, #24272d 48%, #121418 52%, #0d0e11); clip-path: polygon(22% 0, 78% 0, 94% 100%, 6% 100%); }
+.lcd-base {
+  width: 300px; max-width: 72%; height: 16px;
+  border-radius: 50% 50% 8px 8px / 100% 100% 8px 8px;
+  background: linear-gradient(#2a2d33, #0c0d10 70%);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.12);
+}
+
+/* Case: Aerocool B508A Flow ARGB, front view (206 x 450 mm). */
+.stage { --case-w: clamp(150px, calc((100vh - 350px) * 0.36), 240px); }
+.case {
+  position: relative; flex: 0 0 var(--case-w); width: var(--case-w); aspect-ratio: 206 / 450;
+  display: grid; grid-template-rows: auto 1fr;
+  border-radius: 6px; background: #08090b; border: 1px solid #23262c;
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.06), 0 30px 60px rgb(0 0 0 / 0.55);
+}
+.case-top { display: flex; align-items: center; gap: 4px; padding: 6px 8px; border-bottom: 1px solid #1a1d22; }
+.case-btn { width: 44px; height: 44px; display: grid; place-items: center; background: none; border: 0; cursor: pointer; border-radius: 50%; padding: 0; }
+.case-btn span { display: block; border-radius: 50%; background: #16181c; border: 1.5px solid #30343b; transition: box-shadow 0.3s, border-color 0.3s; }
+.case-btn.power span { width: 22px; height: 22px; }
+.case-btn.reset span { width: 12px; height: 12px; }
+.case-btn:hover span { border-color: #585d66; }
+.case-btn:active span { transform: scale(0.9); }
+.case-btn:focus-visible { outline: 2px solid var(--led-blue); outline-offset: 1px; }
+.stage[data-on="1"] .case-btn.power span { border-color: #3a83d6; box-shadow: 0 0 8px rgb(88 169 255 / 0.6); }
+.case-hdd { width: 6px; height: 6px; border-radius: 50%; background: var(--led-off); margin-left: 2px; }
+.case-hdd.blink { background: #ff5f4f; box-shadow: 0 0 6px #ff5f4f; }
+.case-ports { margin-left: auto; display: flex; gap: 3px; }
+.case-ports i { width: 9px; height: 4px; border-radius: 1px; background: #1c1f24; box-shadow: inset 0 0 0 1px #2b2f36; }
+.case-ports i:first-child { box-shadow: inset 0 0 0 1px #2e5a99; }
+.case-front {
+  position: relative; margin: 8px; border-radius: 3px; overflow: hidden;
+  display: grid; align-content: start; justify-items: center; gap: 6%; padding-top: 10%;
+  background:
+    radial-gradient(circle at 3px 3px, #1c1f25 1.3px, transparent 1.7px) 0 0 / 7px 6px,
+    radial-gradient(circle at 3px 3px, #1c1f25 1.3px, transparent 1.7px) 3.5px 3px / 7px 6px,
+    #060709;
+}
+.fan { position: relative; width: 78%; aspect-ratio: 1; border-radius: 50%; }
+/* ARGB ring: rainbow conic gradient masked to a thin band, spun at fan speed. */
+.fan::before {
+  content: ""; position: absolute; inset: 0; border-radius: 50%;
+  background: conic-gradient(#ff3b6b, #ffb23b, #e7ff3b, #3bff9d, #3bc8ff, #6b5bff, #ff3bd1, #ff3b6b);
+  -webkit-mask: radial-gradient(circle, transparent 60%, #000 62% 68%, transparent 70%);
+  mask: radial-gradient(circle, transparent 60%, #000 62% 68%, transparent 70%);
+  opacity: 0.08; filter: saturate(0.4);
+  transition: opacity 0.8s ease, filter 0.8s ease;
+}
+.fan::after { content: ""; position: absolute; inset: 30%; border-radius: 50%; background: #0c0d10; box-shadow: 0 0 0 1px #1c1f24; }
+.stage[data-on="1"] .fan::before { opacity: 0.95; filter: saturate(1.1) drop-shadow(0 0 6px rgb(160 120 255 / 0.55)); animation: argb var(--fan-spin) linear infinite; }
+.stage[data-on="1"] .case-front { box-shadow: inset 0 0 40px rgb(120 100 255 / 0.18); }
+@keyframes argb { to { transform: rotate(360deg); } }
+
+/* Desk top and front edge the hardware stands on. */
+.tabletop { height: 22px; margin-inline: -16px; background: linear-gradient(var(--desk-edge), var(--desk) 30%); border-top: 1px solid #3a3128; box-shadow: 0 -12px 30px rgb(0 0 0 / 0.35); }
+
 .screen {
   position: absolute; left: 0; top: 0;
   width: 1280px; height: 720px;
@@ -67,43 +154,52 @@ body { margin: 0; background: var(--room); color: var(--ink); font: 14px/1.5 var
   user-select: none;
 }
 
-/* Front panel */
+/* Control strip on the desk. Groups are named after where the control lives. */
 .panel {
-  display: flex; flex-wrap: wrap; align-items: center; gap: 12px 24px;
-  padding: 12px 16px;
-  background: var(--room-2);
-  border: 1px solid var(--line);
-  border-radius: 8px;
+  display: flex; flex-wrap: wrap; align-items: flex-start; gap: 16px 32px;
+  padding: 14px 16px;
+  margin-inline: -16px;
+  background: var(--desk);
+  border-top: 1px solid #1a1510;
 }
-.group { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.group { display: grid; gap: 6px; }
+.group > h3 { margin: 0; font: 500 12px var(--sans); color: #8d857a; }
+.group-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 .hw-btn {
   display: inline-flex; align-items: center; gap: 8px;
   min-height: 44px; padding: 0 14px;
-  background: #22252a; color: var(--ink);
-  border: 1px solid #33373d; border-radius: 8px;
+  background: #2b241d; color: var(--ink);
+  border: 1px solid #3b3228; border-radius: 8px;
   font: 500 13px var(--sans); cursor: pointer;
 }
-.hw-btn:hover { background: #2b2f35; }
+.hw-btn:hover { background: #352c23; border-color: #4a3f33; }
 .hw-btn:active { transform: translateY(1px); }
-.hw-btn:focus-visible { outline: 2px solid #4aa3ff; outline-offset: 2px; }
-.hw-btn .ti { font-size: 18px; }
-.hw-btn.power .ti { color: var(--led-green); }
-.hw-btn.subtle { background: transparent; }
-.hw-btn .key { font: 600 11px var(--mono); padding: 2px 6px; border: 1px solid #4a4f57; border-radius: 4px; }
-.hw-btn.held { background: #33373d; border-color: #4aa3ff; }
+.hw-btn:focus-visible { outline: 2px solid var(--led-blue); outline-offset: 2px; }
+.hw-btn .ti { font-size: 18px; color: #c9bfb2; }
+.hw-btn .key { font: 600 11px var(--mono); padding: 2px 6px; border: 1px solid #5a4d3f; border-radius: 4px; }
+.hw-btn.held { background: #3a3027; border-color: var(--led-blue); }
 
-.leds { font: 500 11px var(--mono); }
-.led-label { color: var(--ink-2); margin-right: 4px; }
-.led { display: inline-flex; align-items: center; gap: 6px; padding: 4px 8px; border-radius: 4px; background: #1c1e22; color: var(--ink-2); }
-.led::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--led-off); }
+.leds { display: flex; gap: 6px; }
+.led { display: inline-flex; align-items: center; gap: 6px; min-height: 30px; padding: 0 10px; border-radius: 4px; background: #1b1612; color: #9a9185; font: 500 12px var(--sans); }
+.led::before { content: ""; width: 7px; height: 7px; border-radius: 1px; background: var(--led-off); }
 .led.lit { color: var(--ink); }
 .led.lit::before { background: var(--led-amber); box-shadow: 0 0 8px var(--led-amber); }
+.led.fail { color: #ffd2cd; }
 .led.fail::before { background: var(--led-red); box-shadow: 0 0 8px var(--led-red); }
 
-.readout { flex: 1 1 260px; font: 12px/1.4 var(--mono); color: var(--ink-2); font-variant-numeric: tabular-nums; }
-.disclaimer { margin: 0; color: var(--ink-2); font-size: 12px; }
+.readout-group { flex: 1 1 280px; min-width: 0; }
+.readout { font: 12px/1.5 var(--mono); color: #cfc6ba; font-variant-numeric: tabular-nums; min-height: 44px; display: flex; align-items: center; }
+.disclaimer { margin: 0; padding: 10px 0 16px; color: #8d857a; font-size: 12px; background: var(--desk); margin-inline: -16px; padding-inline: 16px; }
 
-.parts { max-width: 760px; width: calc(100% - 32px); background: var(--room-2); color: var(--ink); border: 1px solid var(--line); border-radius: 8px; padding: 24px; }
+@media (max-width: 760px) {
+  .case { display: none; }
+  .stage { --case-w: 0px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .stage[data-on="1"] .fan::before { animation: none; }
+}
+
+.parts { max-width: 760px; width: calc(100% - 32px); background: var(--panel); color: var(--ink); border: 1px solid var(--line); border-radius: 8px; padding: 24px; }
 .parts::backdrop { background: rgb(0 0 0 / 0.6); }
 .parts h2 { margin: 0 0 16px; font-size: 20px; }
 .parts table { width: 100%; border-collapse: collapse; font-size: 13px; }

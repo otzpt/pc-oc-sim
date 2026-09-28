@@ -13,8 +13,24 @@ import { sound } from './ui/sound.js';
 const screen = document.getElementById('screen');
 const fit = document.getElementById('screenFit');
 const readout = document.getElementById('readout');
+const stage = document.querySelector('.stage');
+const hdd = document.getElementById('hddLed');
 const powerBtn = document.getElementById('btnPower');
-const powerLed = mode => { powerBtn.classList.toggle('on', mode === 'on'); powerBtn.classList.toggle('standby', mode !== 'on'); };
+const powerLed = mode => {
+  powerBtn.classList.toggle('on', mode === 'on');
+  powerBtn.classList.toggle('standby', mode !== 'on');
+  stage.dataset.on = mode === 'on' ? '1' : '0';
+};
+// Disk activity LED on the case: busy while POSTing and booting, then occasional blips.
+let hddTimer = 0;
+function diskActivity(ms) {
+  clearInterval(hddTimer);
+  const end = performance.now() + ms;
+  hddTimer = setInterval(() => {
+    hdd.classList.toggle('blink', Math.random() < 0.55);
+    if (performance.now() > end) { clearInterval(hddTimer); hdd.classList.remove('blink'); }
+  }, 90);
+}
 const leds = Object.fromEntries([...document.querySelectorAll('[data-led]')].map(el => [el.dataset.led, el]));
 
 export const machine = {
@@ -43,6 +59,7 @@ export function show(html, cls) {
   machine.cleanup = null;
   machine.keyHandler = null;
   screen.innerHTML = '';
+  stage.dataset.screen = (cls ?? '').split(' ')[0] || 'black';
   const el = document.createElement('div');
   el.className = `scr ${cls ?? ''}`;
   if (html) el.innerHTML = html;
@@ -92,6 +109,7 @@ function post() {
   const cfg = resolve(state.cmos);
   const res = postCheck(cfg, state.silicon);
   status('POST...');
+  diskActivity(1800);
 
   // Debug LEDs walk CPU -> DRAM -> VGA -> BOOT, stopping where POST fails.
   const order = ['CPU', 'DRAM', 'VGA', 'BOOT'];
@@ -177,6 +195,7 @@ function bootOs(cfg, res) {
   setLed(null);
   const el = show(`<div class="orbwrap">${orb(120, true)}<div class="label">Starting VOID 7</div></div><div class="copy">Simulated operating system</div>`, 'winboot');
   status('Booting VOID 7...');
+  diskActivity(3400);
   // A marginal OC can crash during boot, which loads every core in bursts.
   const risky = res.cpuMargin < 0.005 || res.memMargin < 0.05;
   later(() => {
@@ -244,7 +263,11 @@ sim.on(ev => {
   if (ev.type === 'bsod') bsod(ev);
   if (ev.type === 'reboot') { status(ev.reason); reboot(); }
   if (ev.type === 'poweroff') powerOff(ev.reason);
-  if (ev.type === 'tick') sound.fanLevel(Math.max(ev.snap.fans.cpu, ev.snap.fans.sys, ev.snap.fans.gpu));
+  if (ev.type === 'tick') {
+    sound.fanLevel(Math.max(ev.snap.fans.cpu, ev.snap.fans.sys, ev.snap.fans.gpu));
+    stage.style.setProperty('--fan-spin', `${(1.9 - 1.4 * ev.snap.fans.sys).toFixed(2)}s`);
+    if (Math.random() < 0.04) diskActivity(120);
+  }
   if (ev.type === 'tick' && machine.power === 'os') {
     const s = ev.snap;
     status(`CPU ${s.cpu.fAvgActive.toFixed(2)} GHz ${s.vcore.toFixed(3)} V ${s.temps.tctl.toFixed(0)}°C ${s.cpu.pkg.toFixed(0)} W | GPU ${s.gpu.f} MHz ${s.temps.gpu.toFixed(0)}°C | Wall ${s.wall.toFixed(0)} W${s.throttle ? ` | ${s.throttle} throttling` : ''}`);
@@ -252,13 +275,15 @@ sim.on(ev => {
 });
 
 // ---------- inputs ----------
-powerBtn.addEventListener('click', () => {
+const pressPower = () => {
   sound.click();
   if (machine.power === 'off') powerOn();
   else if (machine.power === 'os') screen.dispatchEvent(new CustomEvent('acpi-power'));
   else powerOff('Forced off.');
-});
-document.getElementById('btnReset').addEventListener('click', () => { if (machine.power !== 'off') reboot(); });
+};
+powerBtn.addEventListener('click', pressPower);
+document.getElementById('btnCasePower').addEventListener('click', pressPower);
+document.getElementById('btnReset').addEventListener('click', () => { sound.click(); if (machine.power !== 'off') reboot(); });
 document.getElementById('btnCmos').addEventListener('click', () => {
   if (machine.power !== 'off') { status('Turn the PC off before shorting JBAT1.'); return; }
   clearCmos();
