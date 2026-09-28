@@ -16,19 +16,23 @@
 <body>
   <main class="stage">
     <div class="monitor">
-      <div class="bezel">
+      <div class="lcd">
         <div class="screen-fit" id="screenFit">
           <div class="screen" id="screen" tabindex="0" aria-label="Simulated monitor"></div>
         </div>
+        <div class="lcd-chin">
+          <span class="lcd-brand">VOID</span>
+          <button class="lcd-power standby" id="btnPower" type="button" title="Power (turns the PC on and off)" aria-label="Power">
+            <span class="ring"><i class="ti ti-power" aria-hidden="true"></i></span>
+          </button>
+        </div>
       </div>
-      <div class="monitor-led" id="monitorLed" aria-hidden="true"></div>
+      <div class="lcd-neck" aria-hidden="true"></div>
+      <div class="lcd-base" aria-hidden="true"></div>
     </div>
 
     <section class="panel" aria-label="Case front panel and motherboard">
       <div class="group">
-        <button class="hw-btn power" id="btnPower" type="button" title="Power button (hold 4 s to force off)">
-          <i class="ti ti-power" aria-hidden="true"></i><span>Power</span>
-        </button>
         <button class="hw-btn" id="btnReset" type="button" title="Reset button">
           <i class="ti ti-refresh" aria-hidden="true"></i><span>Reset</span>
         </button>
@@ -45,11 +49,14 @@
         <span class="led" data-led="BOOT">BOOT</span>
       </div>
 
-      <div class="group readout" id="readout" aria-live="polite">Off. Press Power.</div>
+      <div class="group readout" id="readout" aria-live="polite">Off. Press the power button on the monitor.</div>
 
       <div class="group">
         <button class="hw-btn subtle" id="btnCmos" type="button" title="Short JBAT1 with the PC off">
           <i class="ti ti-battery-off" aria-hidden="true"></i><span>Clear CMOS (JBAT1)</span>
+        </button>
+        <button class="hw-btn subtle" id="btnMute" type="button">
+          <i class="ti ti-volume" aria-hidden="true"></i><span>Sound on</span>
         </button>
         <button class="hw-btn subtle" id="btnSpecs" type="button">
           <i class="ti ti-list-details" aria-hidden="true"></i><span>Parts list</span>

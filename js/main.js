@@ -8,11 +8,13 @@ import { openBios } from './bios.js';
 import { openDesktop } from './os.js';
 import { CPU, BOARD, RAM, GPU, COOLER, SSD, PSU, CASE } from './hardware.js';
 import { orb } from './ui/orb.js';
+import { sound } from './ui/sound.js';
 
 const screen = document.getElementById('screen');
 const fit = document.getElementById('screenFit');
 const readout = document.getElementById('readout');
-const led = document.getElementById('monitorLed');
+const powerBtn = document.getElementById('btnPower');
+const powerLed = mode => { powerBtn.classList.toggle('on', mode === 'on'); powerBtn.classList.toggle('standby', mode !== 'on'); };
 const leds = Object.fromEntries([...document.querySelectorAll('[data-led]')].map(el => [el.dataset.led, el]));
 
 export const machine = {
@@ -58,7 +60,8 @@ function status(text) { readout.textContent = text; }
 // ---------- power ----------
 export function powerOn() {
   if (machine.power !== 'off') return;
-  led.classList.add('on');
+  powerLed('on');
+  sound.fansOn();
   post();
 }
 
@@ -66,10 +69,11 @@ export function powerOff(reason) {
   clearTimers();
   sim.stop();
   machine.power = 'off';
-  led.classList.remove('on');
+  powerLed('standby');
+  sound.fansOff();
   setLed(null);
   show('', 'black');
-  status(reason ? `Off. ${reason}` : 'Off. Press Power.');
+  status(reason ? `Off. ${reason}` : 'Off. Press the power button on the monitor.');
 }
 
 export function reboot() {
@@ -105,12 +109,15 @@ function post() {
       show('<span>No Signal</span>', 'nosignal');
       status(`No POST: ${res.reason}. Retry ${state.bootFails}/3.`);
     }, 250 + stopAt * 450 + 300);
-    later(() => (state.bootFails >= 3 ? ocFailed(res) : post()), 4200);
+    // The board power-cycles itself between training attempts.
+    later(() => sound.fansOff(), 3000);
+    later(() => { sound.fansOn(); state.bootFails >= 3 ? ocFailed(res) : post(); }, 4200);
     return;
   }
 
   later(() => {
     setLed(null);
+    if (state.cmos.postBeep === 'Enabled') sound.beep(1);
     const el = show(`
       <div class="post-logo"><div class="brand">PRO SERIES</div><div class="sub">B450M PRO-VDH MAX</div></div>
       <div class="post-foot"><span>Press DEL key to enter Setup Menu, F11 to enter Boot Menu</span><span>${cfg.mem.mt} MT/s</span></div>`, 'post');
@@ -185,6 +192,7 @@ function bootOs(cfg, res) {
 function desktop(cfg) {
   machine.power = 'os';
   state.bootFails = 0; save('bootFails');
+  sound.chime();
   const el = show('', 'win7 desk-host');
   sim.boot(cfg);
   machine.cleanup = openDesktop(el, {
@@ -199,6 +207,7 @@ function bsod(ev) {
   clearTimers();
   sim.stop();
   machine.power = 'fail';
+  sound.crash();
   const params = Array.from({ length: 4 }, () => '0x' + Math.floor(Math.random() * 2 ** 32).toString(16).toUpperCase().padStart(8, '0'));
   show(`A problem has been detected and VOID 7 has been shut down to prevent damage
 to your computer.
@@ -235,6 +244,7 @@ sim.on(ev => {
   if (ev.type === 'bsod') bsod(ev);
   if (ev.type === 'reboot') { status(ev.reason); reboot(); }
   if (ev.type === 'poweroff') powerOff(ev.reason);
+  if (ev.type === 'tick') sound.fanLevel(Math.max(ev.snap.fans.cpu, ev.snap.fans.sys, ev.snap.fans.gpu));
   if (ev.type === 'tick' && machine.power === 'os') {
     const s = ev.snap;
     status(`CPU ${s.cpu.fAvgActive.toFixed(2)} GHz ${s.vcore.toFixed(3)} V ${s.temps.tctl.toFixed(0)}°C ${s.cpu.pkg.toFixed(0)} W | GPU ${s.gpu.f} MHz ${s.temps.gpu.toFixed(0)}°C | Wall ${s.wall.toFixed(0)} W${s.throttle ? ` | ${s.throttle} throttling` : ''}`);
@@ -242,7 +252,8 @@ sim.on(ev => {
 });
 
 // ---------- inputs ----------
-document.getElementById('btnPower').addEventListener('click', () => {
+powerBtn.addEventListener('click', () => {
+  sound.click();
   if (machine.power === 'off') powerOn();
   else if (machine.power === 'os') screen.dispatchEvent(new CustomEvent('acpi-power'));
   else powerOff('Forced off.');
@@ -283,5 +294,9 @@ const parts = [
 ];
 document.getElementById('partsBody').innerHTML = `<table>${parts.map(([k, v]) => `<tr><th>${k}</th><td>${v}</td></tr>`).join('')}</table>`;
 document.getElementById('btnSpecs').addEventListener('click', () => document.getElementById('partsDialog').showModal());
+const muteBtn = document.getElementById('btnMute');
+const muteLabel = () => { muteBtn.querySelector('span').textContent = sound.muted ? 'Sound off' : 'Sound on'; muteBtn.querySelector('.ti').className = `ti ${sound.muted ? 'ti-volume-off' : 'ti-volume'}`; };
+muteBtn.addEventListener('click', () => { sound.toggleMute(); muteLabel(); });
+muteLabel();
 
 powerOff();

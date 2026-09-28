@@ -26,17 +26,37 @@ body { margin: 0; background: var(--room); color: var(--ink); font: 14px/1.5 var
   margin: 0 auto;
 }
 
-/* Monitor */
-.monitor { position: relative; display: grid; min-height: 0; }
-.bezel {
-  background: #050506;
-  border: 1px solid #222428;
-  border-radius: 10px;
-  padding: 14px 14px 26px;
-  min-height: 0;
-  display: grid;
+/* Monitor: a Windows 7 era 16:9 LCD. Simple shapes only (bezel, chin, stand). */
+.monitor { display: grid; justify-items: center; align-content: start; min-height: 0; }
+.lcd {
+  width: min(100%, calc((100vh - 330px) * 16 / 9 + 36px));
+  min-width: 340px;
+  padding: 16px 16px 0;
+  background: linear-gradient(180deg, #1c1d21 0%, #0e0f11 100%);
+  border: 1px solid #2b2d32;
+  border-radius: 12px;
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.08), 0 24px 48px rgb(0 0 0 / 0.55);
 }
-.screen-fit { position: relative; width: min(100%, calc((100vh - 200px) * 16 / 9)); min-width: 320px; aspect-ratio: 16 / 9; margin: 0 auto; overflow: hidden; background: #000; }
+.screen-fit { position: relative; width: 100%; aspect-ratio: 16 / 9; overflow: hidden; background: #000; border: 1px solid #000; box-shadow: inset 0 0 0 1px #050505; }
+.lcd-chin { position: relative; height: 48px; display: flex; align-items: center; justify-content: center; }
+.lcd-brand { font: 600 12px var(--sans); letter-spacing: 0.35em; color: #7d8189; }
+.lcd-power {
+  position: absolute; right: 18px; top: 50%; transform: translateY(-50%);
+  width: 44px; height: 44px; display: grid; place-items: center;
+  background: none; border: 0; border-radius: 50%; cursor: pointer; color: #6b6f77;
+}
+.lcd-power .ring {
+  width: 26px; height: 26px; display: grid; place-items: center; border-radius: 50%;
+  border: 1.5px solid #3a3d43; background: #131417; transition: border-color 0.3s, box-shadow 0.3s, color 0.3s;
+}
+.lcd-power .ti { font-size: 14px; }
+.lcd-power:hover .ring { border-color: #5a5e66; color: #b8bcc4; }
+.lcd-power:focus-visible { outline: 2px solid #4aa3ff; outline-offset: 2px; }
+.lcd-power.standby .ring { border-color: #b07a1c; color: var(--led-amber); box-shadow: 0 0 8px rgb(255 176 46 / 0.35); }
+.lcd-power.on .ring { border-color: #3f8fe0; color: #7cc0ff; box-shadow: 0 0 10px rgb(74 163 255 / 0.55); }
+.lcd-power:active .ring { transform: scale(0.94); }
+.lcd-neck { width: 110px; height: 56px; background: linear-gradient(90deg, #121316, #26282d 50%, #121316); clip-path: polygon(18% 0, 82% 0, 100% 100%, 0 100%); }
+.lcd-base { width: 340px; max-width: 70%; height: 14px; border-radius: 50% 50% 6px 6px / 100% 100% 6px 6px; background: linear-gradient(#26282d, #0e0f11); box-shadow: 0 10px 24px rgb(0 0 0 / 0.6); }
 .screen {
   position: absolute; left: 0; top: 0;
   width: 1280px; height: 720px;
@@ -46,8 +66,6 @@ body { margin: 0; background: var(--room); color: var(--ink); font: 14px/1.5 var
   outline: none;
   user-select: none;
 }
-.monitor-led { position: absolute; right: 26px; bottom: 9px; width: 6px; height: 6px; border-radius: 50%; background: var(--led-amber); }
-.monitor-led.on { background: #4aa3ff; }
 
 /* Front panel */
 .panel {

@@ -1,6 +1,7 @@
 # PC OC Sim
 
-A browser simulation of one specific desktop PC: power it on, hold DEL to enter
+A browser simulation of one specific desktop PC: press the power button on the
+monitor, hold DEL to enter
 a Click BIOS 5 style setup, overclock the CPU, memory and fabric, then boot a
 Windows 7 style desktop ("VOID 7") and find out with stress tests and
 benchmarks whether the overclock is stable.
@@ -79,6 +80,10 @@ and [lkspodmol/myos1](https://github.com/lkspodmol/myos1).
 | [Tabler Icons](https://github.com/tabler/tabler-icons) webfont v3.48.0, Copyright (c) 2020-2026 Paweł Kuna | MIT | All icons, including the start orb glyph (`layout-grid`) |
 | [Noto Sans](https://fonts.google.com/noto/specimen/Noto+Sans) | SIL Open Font License 1.1 | UI font |
 | [IBM Plex Mono](https://fonts.google.com/specimen/IBM+Plex+Mono) | SIL Open Font License 1.1 | Monospace font |
+
+The monitor is drawn with plain CSS shapes and all sounds (power click, fan
+spin-up, POST beep, startup chime, crash buzz) are synthesized at runtime with
+the Web Audio API, so the project ships no image or audio files from anyone else.
 
 YouTube and Spotify content is played through their official embed players and
 stays under their terms of service.
