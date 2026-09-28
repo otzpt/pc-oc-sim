@@ -15,7 +15,8 @@
 .desk-icon span { text-align: center; text-shadow: 0 1px 2px #000, 0 0 6px #000; line-height: 1.2; font-size: 9pt; }
 
 .desk-windows { position: absolute; inset: 0 0 40px 0; pointer-events: none; }
-.app-win { position: absolute; display: flex; flex-direction: column; pointer-events: auto; }
+/* .win7 .window in 7.css sets position: relative; this must beat it or windows stack in flow. */
+.win7 .window.app-win { position: absolute; display: flex; flex-direction: column; pointer-events: auto; margin: 0; }
 .app-win.maxed { left: 0 !important; top: 0 !important; width: 100% !important; height: 100% !important; }
 .app-win .title-bar-text { display: flex; align-items: center; gap: 6px; }
 .app-win .title-bar-text .ti { font-size: 14px; }
